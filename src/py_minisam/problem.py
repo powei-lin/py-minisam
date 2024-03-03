@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from functools import partial
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 import numpy as np
 
@@ -64,6 +64,20 @@ class Problem:
         )
         self.residual_blocks.append(residual_block)
         self._dim_residual += dim_residual
+
+    def compute_residual_and_jacobian(self, params: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+        jac = np.zeros((self._dim_residual, self._dim_variable), dtype=np.float64)
+        residuals = np.zeros(self._dim_residual, dtype=np.float64)
+        for residual_block in self.residual_blocks:
+            variables = []
+            for col in residual_block.variable_col_start_index_list:
+                variables.append(params[col : col + self.col_idx_to_variable_dict[col].size])
+            residual = residual_block.residual_func(*variables)
+            residuals[residual_block.residual_row_start_idx : residual_block.residual_row_start_idx + residual.size] = (
+                residual
+            )
+            residual_block.calulate_jac(jac, *variables)
+        return residuals, jac
 
     def combine_variables(self) -> np.ndarray:
         all_variables = np.zeros(self._dim_variable, np.float64)

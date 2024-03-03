@@ -4,7 +4,7 @@ from time import perf_counter
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from py_minisam.optimizer.gauss_newton_optimizer import GaussNewtonOptimizer
+from py_minisam.optimizer import GaussNewtonOptimizer, LevenbergMarquardtOptimizer
 from py_minisam.problem import Problem
 
 np.random.seed(2)

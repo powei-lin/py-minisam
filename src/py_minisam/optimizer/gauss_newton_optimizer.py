@@ -15,21 +15,10 @@ class GaussNewtonOptimizer(BaseOptimizer):
             print(i)
             result.iterations += 1
 
-            jac = np.zeros((problem._dim_residual, problem._dim_variable), dtype=np.float64)
-            residuals = np.zeros(problem._dim_residual, dtype=np.float64)
-            for residual_block in problem.residual_blocks:
-                variables = []
-                for col in residual_block.variable_col_start_index_list:
-                    variables.append(params[col : col + problem.col_idx_to_variable_dict[col].size])
-                residual = residual_block.residual_func(*variables)
-                residuals[
-                    residual_block.residual_row_start_idx : residual_block.residual_row_start_idx + residual.size
-                ] = residual
-                residual_block.calulate_jac(jac, *variables)
+            residuals, jac = problem.compute_residual_and_jacobian(params)
             hessian = jac.T @ jac
             b = -jac.T @ residuals
             dx = np.linalg.solve(hessian, b)
-            # print(dx)
             if np.linalg.norm(dx) < 1e-8:
                 break
             params += dx

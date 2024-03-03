@@ -17,17 +17,8 @@ class LevenbergMarquardtOptimizer(BaseOptimizer):
         for i in range(max_iteration):
             result.iterations += 1
 
-            jac = np.zeros((problem._dim_residual, problem._dim_variable), dtype=np.float64)
-            residuals = np.zeros(problem._dim_residual, dtype=np.float64)
-            for residual_block in problem.residual_blocks:
-                variables = []
-                for col in residual_block.variable_col_start_index_list:
-                    variables.append(problem.col_idx_to_variable_dict[col])
-                residual = residual_block.residual_func(*variables)
-                residuals[
-                    residual_block.residual_row_start_idx : residual_block.residual_row_start_idx + residual.size
-                ] = residual
-                residual_block.calulate_jac(jac, *variables)
+            params = problem.combine_variables()
+            residuals, jac = problem.compute_residual_and_jacobian(params)
             gradient = jac.T @ -residuals
             jtj = jac.T @ jac
             max_gradient = np.amax(np.abs(gradient))
@@ -45,7 +36,6 @@ class LevenbergMarquardtOptimizer(BaseOptimizer):
             dx = np.linalg.solve(jtj_augmented, gradient)
             solution = jtj_augmented @ dx
             if np.amin(np.abs(solution - gradient)) < solver_params.error_threshold:
-                params = problem.combine_variables()
                 if np.linalg.norm(dx) < solver_params.relative_step_threshold * np.linalg.norm(params):
                     result.status = SolverStatus.RelativeStepSizeTooSmall
                     break
