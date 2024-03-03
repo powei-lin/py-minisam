@@ -25,7 +25,7 @@ class LevenbergMarquardtOptimizer(BaseOptimizer):
             if max_gradient < solver_params.gradient_threshold:
                 print("g small")
                 break
-            elif np.linalg.norm(residual) < solver_params.error_threshold:
+            elif np.linalg.norm(residuals) < solver_params.error_threshold:
                 print("err small")
                 break
             if i == 0:
@@ -66,6 +66,3 @@ class LevenbergMarquardtOptimizer(BaseOptimizer):
                 print(f"fail {solution - gradient}")
             u *= v
             v *= 2
-
-            # print(f"residual shape: {residuals.shape}")
-            # print(f"jac shape: {jac.shape}")

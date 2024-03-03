@@ -21,19 +21,21 @@ def cost_function(p3d: np.ndarray, rvec: np.ndarray):
 
 def main():
     rvec_noise = rvec_gt + np.random.random(3) / 10.0
-    print("init:", rvec_noise)
 
-    problem = Problem()
+    for solver_class in [GaussNewtonOptimizer, LevenbergMarquardtOptimizer]:
+        rvec_noise_init = rvec_noise.copy()
+        print("init:", rvec_noise_init)
+        problem = Problem()
 
-    p3d0 = np.random.random((3, 2))
-    problem.add_residual_block(p3d0.size, partial(cost_function, p3d0), rvec_noise)
-    p3d1 = np.random.random((3, 3))
-    problem.add_residual_block(p3d1.size, partial(cost_function, p3d1), rvec_noise)
-    print(f"{rvec_noise=}")
-    gn = GaussNewtonOptimizer()
-    gn.optimize(problem)
-    print(f"{rvec_noise=}")
-    print(f"{rvec_gt=}")
+        p3d0 = np.random.random((3, 2))
+        problem.add_residual_block(p3d0.size, partial(cost_function, p3d0), rvec_noise_init)
+        p3d1 = np.random.random((3, 3))
+        problem.add_residual_block(p3d1.size, partial(cost_function, p3d1), rvec_noise_init)
+        print(f"{rvec_noise_init=}")
+        solver = solver_class()
+        solver.optimize(problem)
+        print(f"{rvec_noise_init=}")
+        print(f"{rvec_gt=}")
 
     # for iter in range(10):
     #     print(f"{iter=}")

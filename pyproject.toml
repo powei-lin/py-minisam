@@ -32,15 +32,8 @@ Source = "https://github.com/powei-lin/py-minisam"
 [tool.hatch.version]
 path = "src/py_minisam/__about__.py"
 
-[tool.hatch.env]
-requires = ["hatch-pip-compile"]
-
 [tool.hatch.envs.default]
-type = "pip-compile"
-pip-compile-verbose = true
-pip-compile-resolver = "uv"
-pip-compile-installer = "uv"
-dependencies = ["coverage[toml]>=6.5", "pytest"]
+dependencies = ["coverage[toml]>=6.5", "pytest", "scipy"]
 
 [tool.hatch.envs.default.scripts]
 test = "pytest {args:tests}"
