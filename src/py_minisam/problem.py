@@ -8,8 +8,7 @@ from py_minisam.auto_diff import diff_3point_inplace
 
 
 @dataclass
-class _ResidualBlock:
-    """DO NOT USE THIS CLASS DIRECTLY!"""
+class ResidualBlock:
 
     dim_residual: int
     residual_row_start_idx: int
@@ -32,7 +31,7 @@ class Problem:
     def __init__(self) -> None:
         self._dim_variable = 0
         self._dim_residual = 0
-        self.residual_blocks: List[_ResidualBlock] = []
+        self.residual_blocks: List[ResidualBlock] = []
         self.variable_addr_to_col_idx_dict: Dict[int, int] = {}
         self.col_idx_to_variable_dict: Dict[int, np.ndarray] = {}
 
@@ -56,7 +55,7 @@ class Problem:
                 self._dim_variable += variable_dim
             variable_col_start_index_list.append(self.variable_addr_to_col_idx_dict[address])
 
-        residual_block = _ResidualBlock(
+        residual_block = ResidualBlock(
             dim_residual=dim_residual,
             residual_row_start_idx=self._dim_residual,
             variable_col_start_index_list=variable_col_start_index_list,
