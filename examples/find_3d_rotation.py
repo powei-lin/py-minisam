@@ -10,8 +10,6 @@ np.random.seed(2)
 
 rvec_gt = np.random.random(3)
 rmat_gt = Rotation.from_rotvec(rvec_gt).as_matrix()
-# p3d = np.random.random((3, 2))
-# rotated_3d_points = rmat_gt @ p3d
 
 
 def cost_function(p3d: np.ndarray, rvec: np.ndarray):
