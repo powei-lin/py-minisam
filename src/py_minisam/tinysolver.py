@@ -36,8 +36,7 @@ class ProblemResult:
 
 @dataclass
 class _ResidualBlock:
-    """DO NOT USE THIS CLASS DIRECTLY!
-    """
+    """DO NOT USE THIS CLASS DIRECTLY!"""
 
     dim_residual: int
     residual_row_start_idx: int
