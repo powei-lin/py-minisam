@@ -1,5 +1,4 @@
 import numpy as np
-import scipy
 
 from py_minisam.optimizer.base_optimizer import BaseOptimizer, ProblemResult
 from py_minisam.problem import Problem
