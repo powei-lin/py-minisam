@@ -25,9 +25,9 @@ classifiers = [
 dependencies = ["scipy"]
 
 [project.urls]
-Documentation = "https://github.com/unknown/py-minisam#readme"
-Issues = "https://github.com/unknown/py-minisam/issues"
-Source = "https://github.com/unknown/py-minisam"
+Documentation = "https://github.com/powei-lin/py-minisam#readme"
+Issues = "https://github.com/powei-lin/py-minisam/issues"
+Source = "https://github.com/powei-lin/py-minisam"
 
 [tool.hatch.version]
 path = "src/py_minisam/__about__.py"
