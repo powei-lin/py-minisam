@@ -1,7 +1,7 @@
 # py-minisam
 
-[![PyPI - Version](https://img.shields.io/pypi/v/solver-concept.svg)](https://pypi.org/project/py-minisam)
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/solver-concept.svg)](https://pypi.org/project/py-minisam)
+[![PyPI - Version](https://img.shields.io/pypi/v/py-minisam.svg)](https://pypi.org/project/py-minisam)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/py-minisam.svg)](https://pypi.org/project/py-minisam)
 
 -----
 
