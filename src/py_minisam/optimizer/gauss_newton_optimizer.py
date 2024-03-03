@@ -27,13 +27,10 @@ class GaussNewtonOptimizer(BaseOptimizer):
                     residual_block.residual_row_start_idx : residual_block.residual_row_start_idx + residual.size
                 ] = residual
                 residual_block.calulate_jac(jac, *variables)
-            # gradient = jac.T @ -residual
-            # jtj = jac.T @ jac
-            # max_gradient = np.amax(np.abs(gradient))
-            H = jac.T @ jac
-            B = -jac.T @ residuals
-            dx = scipy.linalg.solve(H, B)
-            print(dx)
+            hessian = jac.T @ jac
+            b = -jac.T @ residuals
+            dx = scipy.linalg.solve(hessian, b)
+            # print(dx)
             if np.linalg.norm(dx) < 1e-8:
                 break
             params += dx

@@ -1,10 +1,13 @@
 import numpy as np
+
 from py_minisam.optimizer.base_optimizer import BaseOptimizer, ProblemResult, SolverParameters, SolverStatus
 from py_minisam.problem import Problem
+
 
 class LevenbergMarquardtOptimizer(BaseOptimizer):
     def __init__(self) -> None:
         pass
+
     def optimize(problem: Problem, max_iteration: int = 100):
         result = ProblemResult()
         solver_params = SolverParameters()
@@ -21,9 +24,9 @@ class LevenbergMarquardtOptimizer(BaseOptimizer):
                 for col in residual_block.variable_col_start_index_list:
                     variables.append(problem.col_idx_to_variable_dict[col])
                 residual = residual_block.residual_func(*variables)
-                residuals[residual_block.residual_row_start_idx : residual_block.residual_row_start_idx + residual.size] = (
-                    residual
-                )
+                residuals[
+                    residual_block.residual_row_start_idx : residual_block.residual_row_start_idx + residual.size
+                ] = residual
                 residual_block.calulate_jac(jac, *variables)
             gradient = jac.T @ -residuals
             jtj = jac.T @ jac

@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from enum import Enum, auto
 from functools import partial
 from typing import Dict, List
 
