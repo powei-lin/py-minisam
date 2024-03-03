@@ -6,8 +6,7 @@ EPISILON = 1.48e-8
 
 
 def diff_2point(jac_shape, func: callable, *variables) -> np.ndarray:
-    """
-    2-point numeric finite difference. f'(x) = (f(x+h) - f(x)) / h
+    """2-point numeric finite difference. f'(x) = (f(x+h) - f(x)) / h
     Args:
         jac_shape: (residual_num, variable_num)
     """
@@ -26,8 +25,7 @@ def diff_2point(jac_shape, func: callable, *variables) -> np.ndarray:
 
 
 def diff_3point(jac_shape, func: callable, *variables) -> np.ndarray:
-    """
-    3-point numeric finite difference. f'(x) = (f(x+h) - f(x-h)) / 2h
+    """3-point numeric finite difference. f'(x) = (f(x+h) - f(x-h)) / 2h
     :param jac_shape: tuple
         the shape of returned jacobian matrix.
     :param func: callable
@@ -55,8 +53,7 @@ def diff_3point(jac_shape, func: callable, *variables) -> np.ndarray:
 def diff_3point_inplace(
     func: callable, variable_col_idx_list: List[int], residual_row_start: int, jac: np.ndarray, *variables
 ):
-    """
-    3-point numeric finite difference. f'(x) = (f(x+h) - f(x-h)) / 2h
+    """3-point numeric finite difference. f'(x) = (f(x+h) - f(x-h)) / 2h
     :param jac_shape: tuple
         the shape of returned jacobian matrix.
     :param func: callable
@@ -65,7 +62,6 @@ def diff_3point_inplace(
         At which the jacobian matrix is evaluated.
     :return:
     """
-
     for col, variable in zip(variable_col_idx_list, variables):
         h = np.maximum(EPISILON * variable, EPISILON)
         for i in range(h.shape[0]):

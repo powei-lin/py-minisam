@@ -5,7 +5,6 @@ from typing import Dict, List
 
 import numpy as np
 import scipy
-
 from solver_concept.auto_diff import diff_3point_inplace
 
 
@@ -37,8 +36,7 @@ class ProblemResult:
 
 @dataclass
 class _ResidualBlock:
-    """
-    DO NOT USE THIS CLASS DIRECTLY!
+    """DO NOT USE THIS CLASS DIRECTLY!
     """
 
     dim_residual: int
@@ -100,11 +98,13 @@ class Problem:
     def combine_variables(self) -> np.ndarray:
         all_variables = np.zeros(self._dim_variable, np.float64)
         for col, variable in self.col_idx_to_variable_dict.items():
-            all_variables[col:col+variable.size] = variable
+            all_variables[col : col + variable.size] = variable
         return all_variables
+
     def write_back_variables(self, all_variables: np.ndarray):
         for col, variable in self.col_idx_to_variable_dict.items():
-            variable[:] = all_variables[col:col+variable.size]
+            variable[:] = all_variables[col : col + variable.size]
+
 
 def solve_gn(problem: Problem, max_iteration: int = 250):
     result = ProblemResult()
@@ -118,7 +118,7 @@ def solve_gn(problem: Problem, max_iteration: int = 250):
         for residual_block in problem.residual_blocks:
             variables = []
             for col in residual_block.variable_col_start_index_list:
-                variables.append(params[col:col+problem.col_idx_to_variable_dict[col].size])
+                variables.append(params[col : col + problem.col_idx_to_variable_dict[col].size])
             residual = residual_block.residual_func(*variables)
             residuals[residual_block.residual_row_start_idx : residual_block.residual_row_start_idx + residual.size] = (
                 residual
@@ -131,18 +131,18 @@ def solve_gn(problem: Problem, max_iteration: int = 250):
         B = -jac.T @ residuals
         dx = scipy.linalg.solve(H, B)
         print(dx)
-        if (np.linalg.norm(dx) < 1e-8):
+        if np.linalg.norm(dx) < 1e-8:
             break
         params += dx
         problem.write_back_variables(params)
     print(np.linalg.norm(residuals))
-    
+
+
 def solve(problem: Problem, max_iteration: int = 150):
     result = ProblemResult()
     solver_params = SolverParameters()
     v = 2
     u = 0.0
-    
 
     for i in range(max_iteration):
         result.iterations += 1
@@ -171,7 +171,7 @@ def solve(problem: Problem, max_iteration: int = 150):
             u = solver_params.initial_scale_factor * np.amax(np.diag(jtj))
 
         jtj_augmented = jtj.copy()
-        np.fill_diagonal(jtj_augmented, np.diag(jtj_augmented)+u)
+        np.fill_diagonal(jtj_augmented, np.diag(jtj_augmented) + u)
         dx = np.linalg.solve(jtj_augmented, gradient)
         solution = jtj_augmented @ dx
         if np.amin(np.abs(solution - gradient)) < solver_params.error_threshold:
@@ -186,13 +186,13 @@ def solve(problem: Problem, max_iteration: int = 150):
                 for col in residual_block.variable_col_start_index_list:
                     variables.append(problem.col_idx_to_variable_dict[col])
                 residual = residual_block.residual_func(*variables)
-                residuals[residual_block.residual_row_start_idx : residual_block.residual_row_start_idx + residual.size] = (
-                    residual
-                )
+                residuals[
+                    residual_block.residual_row_start_idx : residual_block.residual_row_start_idx + residual.size
+                ] = residual
             r_norm = np.linalg.norm(residual)
             r_norm_new = np.linalg.norm(residual_new)
 
-            rho = (r_norm*r_norm - r_norm_new*r_norm_new) / np.dot(dx, (u * dx + gradient))
+            rho = (r_norm * r_norm - r_norm_new * r_norm_new) / np.dot(dx, (u * dx + gradient))
             if rho > 0.0:
                 # params = param_new
                 print("good")
