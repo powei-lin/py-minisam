@@ -33,5 +33,5 @@ class ProblemResult:
 
 class BaseOptimizer:
     @abstractmethod
-    def optimize(problem: Problem, max_iteration: int = 100):
+    def optimize(self, problem: Problem, max_iteration: int = 100):
         pass

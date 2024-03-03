@@ -9,7 +9,7 @@ class GaussNewtonOptimizer(BaseOptimizer):
     def __init__(self) -> None:
         pass
 
-    def optimize(problem: Problem, max_iteration: int = 100):
+    def optimize(self, problem: Problem, max_iteration: int = 100):
         result = ProblemResult()
         params = problem.combine_variables()
         for i in range(max_iteration):
@@ -29,7 +29,7 @@ class GaussNewtonOptimizer(BaseOptimizer):
                 residual_block.calulate_jac(jac, *variables)
             hessian = jac.T @ jac
             b = -jac.T @ residuals
-            dx = scipy.linalg.solve(hessian, b)
+            dx = np.linalg.solve(hessian, b)
             # print(dx)
             if np.linalg.norm(dx) < 1e-8:
                 break

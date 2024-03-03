@@ -4,7 +4,8 @@ from time import perf_counter
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from py_minisam.tinysolver import Problem, solve, solve_gn
+from py_minisam.optimizer.gauss_newton_optimizer import GaussNewtonOptimizer
+from py_minisam.problem import Problem
 
 np.random.seed(2)
 
@@ -29,7 +30,8 @@ def main():
     p3d1 = np.random.random((3, 3))
     problem.add_residual_block(p3d1.size, partial(cost_function, p3d1), rvec_noise)
     print(f"{rvec_noise=}")
-    solve_gn(problem)
+    gn = GaussNewtonOptimizer()
+    gn.optimize(problem)
     print(f"{rvec_noise=}")
     print(f"{rvec_gt=}")
 

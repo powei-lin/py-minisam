@@ -8,7 +8,7 @@ class LevenbergMarquardtOptimizer(BaseOptimizer):
     def __init__(self) -> None:
         pass
 
-    def optimize(problem: Problem, max_iteration: int = 100):
+    def optimize(self, problem: Problem, max_iteration: int = 100):
         result = ProblemResult()
         solver_params = SolverParameters()
         v = 2
