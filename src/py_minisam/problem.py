@@ -5,6 +5,7 @@ from typing import Dict, List, Tuple
 import numpy as np
 
 from py_minisam.auto_diff import diff_3point_inplace
+from py_minisam.factor_graph import FactorGraph
 
 
 @dataclass
@@ -34,6 +35,14 @@ class Problem:
         self.residual_blocks: List[ResidualBlock] = []
         self.variable_addr_to_col_idx_dict: Dict[int, int] = {}
         self.col_idx_to_variable_dict: Dict[int, np.ndarray] = {}
+
+    @staticmethod
+    def from_factor_graph(factor_graph: FactorGraph, initial_variables: Dict[str, np.ndarray]):
+        problem = Problem()
+        for factor in factor_graph.factors:
+            variables = (initial_variables[k] for k in factor.variable_key_list)
+            problem.add_residual_block(factor.dim_residual, factor.error_func, *variables)
+        return problem
 
     def add_residual_block(self, dim_residual, residual_func, *variables):
         if dim_residual <= 0:

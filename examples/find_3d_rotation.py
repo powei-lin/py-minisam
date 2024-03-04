@@ -1,9 +1,11 @@
 from functools import partial
 from time import perf_counter
+from typing import List
 
 import numpy as np
 from scipy.spatial.transform import Rotation
 
+from py_minisam.factor_graph import FactorBase, FactorGraph
 from py_minisam.optimizer import GaussNewtonOptimizer, LevenbergMarquardtOptimizer
 from py_minisam.problem import Problem
 
@@ -17,6 +19,17 @@ def cost_function(p3d: np.ndarray, rvec: np.ndarray):
     rotation_matrix = Rotation.from_rotvec(rvec).as_matrix()
     rotated_3d_points = rmat_gt @ p3d
     return ((rotation_matrix @ p3d) - rotated_3d_points).T.flatten()
+
+
+class CustomFactor(FactorBase):
+    def __init__(self, variable_key_list: List[str], p3d: np.ndarray) -> None:
+        self.p3d = p3d
+        super().__init__(p3d.size, variable_key_list)
+
+    def error_func(self, rvec) -> np.ndarray:
+        rotation_matrix = Rotation.from_rotvec(rvec).as_matrix()
+        rotated_3d_points = rmat_gt @ self.p3d
+        return ((rotation_matrix @ self.p3d) - rotated_3d_points).T.flatten()
 
 
 def main():
@@ -36,6 +49,19 @@ def main():
         solver.optimize(problem)
         print(f"{rvec_noise_init=}")
         print(f"{rvec_gt=}")
+
+    # factor graph
+    factor_graph = FactorGraph()
+    p3d0 = np.random.random((3, 2))
+    factor_graph.add(CustomFactor(["rvec0"], p3d0))
+    p3d1 = np.random.random((3, 3))
+    factor_graph.add(CustomFactor(["rvec0"], p3d1))
+    initial_values = {"rvec0": rvec_noise.copy()}
+    print(initial_values)
+    problem2 = Problem.from_factor_graph(factor_graph, initial_values)
+    gn = GaussNewtonOptimizer()
+    gn.optimize(problem2)
+    print(initial_values)
 
     # for iter in range(10):
     #     print(f"{iter=}")

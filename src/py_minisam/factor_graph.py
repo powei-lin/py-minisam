@@ -1,27 +1,28 @@
-from dataclasses import dataclass
+from abc import abstractmethod
 from typing import List
-from functools import partial
+
 import numpy as np
-from py_minisam.auto_diff import diff_3point_inplace
 
-@dataclass
-class Factor:
-    dim_residual: int
-    residual_row_start_idx: int
-    variable_key_list: List[str]
-    residual_func: callable
-    jac_func = None
-    loss_func = None
-    jac_sparsity = None
 
-    def __post_init__(self):
-        self.jac_func = partial(
-            diff_3point_inplace, self.residual_func, self.variable_col_start_index_list, self.residual_row_start_idx
-        )
+class FactorBase:
+    def __init__(
+        self,
+        dim_residual: int,
+        variable_key_list: List[str],
+    ) -> None:
+        self.dim_residual = dim_residual
+        self.variable_key_list = variable_key_list
 
-    def jacobians_inplace(self, jac: np.ndarray, *variables):
-        self.jac_func(jac, *variables)
+    @abstractmethod
+    def error_func(self, *variables) -> np.ndarray:
+        pass
+
 
 class FactorGraph:
     def __init__(self) -> None:
-        self.factors = []
+        self.factors: List[FactorBase] = []
+
+    def add(self, factor: FactorBase):
+        if not isinstance(factor, FactorBase):
+            raise ValueError
+        self.factors.append(factor)
