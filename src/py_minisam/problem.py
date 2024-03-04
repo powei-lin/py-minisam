@@ -14,8 +14,8 @@ class ResidualBlock:
     residual_row_start_idx: int
     variable_col_start_index_list: List[int]
     residual_func: callable
-    loss_func = None
     jac_func = None
+    loss_func = None
     jac_sparsity = None
 
     def __post_init__(self):
@@ -23,8 +23,8 @@ class ResidualBlock:
             diff_3point_inplace, self.residual_func, self.variable_col_start_index_list, self.residual_row_start_idx
         )
 
-    def calulate_jac(self, jac: np.ndarray, *variables):
-        self.jac_func(jac, *variables)
+    def jacobians_inplace(self, jacobian_matrix: np.ndarray, *variables):
+        self.jac_func(jacobian_matrix, *variables)
 
 
 class Problem:
@@ -75,7 +75,7 @@ class Problem:
             residuals[residual_block.residual_row_start_idx : residual_block.residual_row_start_idx + residual.size] = (
                 residual
             )
-            residual_block.calulate_jac(jac, *variables)
+            residual_block.jacobians_inplace(jac, *variables)
         return residuals, jac
 
     def combine_variables(self) -> np.ndarray:
