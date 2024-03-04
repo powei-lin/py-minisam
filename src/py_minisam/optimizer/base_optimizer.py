@@ -1,7 +1,11 @@
 from abc import abstractmethod
 from dataclasses import dataclass
 from enum import Enum, auto
+from typing import Dict
 
+import numpy as np
+
+from py_minisam.factor_graph import FactorGraph
 from py_minisam.problem import Problem
 
 
@@ -35,3 +39,7 @@ class BaseOptimizer:
     @abstractmethod
     def optimize(self, problem: Problem, max_iteration: int = 100):
         pass
+
+    def optimize_factor_graph(self, factor_graph: FactorGraph, init_values: Dict[str, np.ndarray]):
+        problem = Problem.from_factor_graph(factor_graph, init_values)
+        self.optimize(problem)
