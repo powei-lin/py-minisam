@@ -1,4 +1,4 @@
-name: GitHub Actions Demo
+name: ubuntu
 run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
 on: [push]
 jobs:
@@ -19,7 +19,6 @@ jobs:
     
       - name: Hatch
         run: pip install hatch
-
       
       - name: Run tests
         run: hatch run cov
