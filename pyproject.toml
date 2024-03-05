@@ -22,7 +22,7 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
-dependencies = ["numpy"]
+dependencies = ["scipy"]
 
 [project.urls]
 Documentation = "https://github.com/powei-lin/py-minisam#readme"
