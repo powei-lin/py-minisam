@@ -1,14 +1,10 @@
 import math
-from functools import partial
-from typing import List
 
 import matplotlib.pyplot as plt
 import numpy as np
-from lsq_solver import LeastSquaresProblem
 
 from py_minisam.factor_graph import FactorBase, FactorGraph
 from py_minisam.optimizer import GaussNewtonOptimizer, LevenbergMarquardtOptimizer
-from py_minisam.problem import Problem
 
 
 # np.seterr(all='raise')

@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.sparse import dia_matrix
+from scipy.sparse import eye_array
 from scipy.sparse.linalg import spsolve
 
 from py_minisam.optimizer.base_optimizer import BaseOptimizer, ProblemResult, SolverParameters, SolverStatus
@@ -17,6 +17,7 @@ class LevenbergMarquardtOptimizer(BaseOptimizer):
         u = 0.0
 
         for i in range(max_iteration):
+            print(f"{u=}, {v=}")
             result.iterations += 1
 
             params = problem.combine_variables()
@@ -33,8 +34,8 @@ class LevenbergMarquardtOptimizer(BaseOptimizer):
             if i == 0:
                 u = solver_params.initial_scale_factor * np.amax(jtj.diagonal())
 
-            jtj_augmented = dia_matrix(jtj)
-            jtj_augmented.setdiag(jtj_augmented.diagonal() + u)
+            jtj_augmented = jtj + eye_array(*jtj.shape) * u
+            # jtj_augmented.setdiag(jtj_augmented.diagonal() + u)
             # np.fill_diagonal(jtj_augmented.set, jtj_augmented.diagonal() + u)
             dx = spsolve(jtj_augmented, gradient)
             solution = jtj_augmented @ dx
@@ -65,6 +66,8 @@ class LevenbergMarquardtOptimizer(BaseOptimizer):
                     u = u * max(1.0 / 3.0, 1.0 - tmp**3)
                     v = 2
                     continue
+                else:
+                    print("not good")
             else:
                 result.num_failed_linear_solves += 1
                 print(f"fail {solution - gradient}")
