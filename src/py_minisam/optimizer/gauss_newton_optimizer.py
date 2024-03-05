@@ -17,13 +17,9 @@ class GaussNewtonOptimizer(BaseOptimizer):
             result.iterations += 1
 
             residuals, jac = problem.compute_residual_and_jacobian(params)
-            # print("r:", np.sum(np.abs(residuals)))
             hessian = jac.T @ jac
             b = -jac.T @ residuals
             dx = spsolve(hessian, b)
-            # lu_factor once and lu_solve
-            # dx = np.linalg.solve(hessian, b)
-            # print(dx)
             if np.linalg.norm(dx) < 1e-16:
                 break
             params += dx

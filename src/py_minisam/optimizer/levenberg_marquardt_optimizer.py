@@ -1,4 +1,6 @@
 import numpy as np
+from scipy.sparse import dia_matrix
+from scipy.sparse.linalg import spsolve
 
 from py_minisam.optimizer.base_optimizer import BaseOptimizer, ProblemResult, SolverParameters, SolverStatus
 from py_minisam.problem import Problem
@@ -29,11 +31,12 @@ class LevenbergMarquardtOptimizer(BaseOptimizer):
                 print("err small")
                 break
             if i == 0:
-                u = solver_params.initial_scale_factor * np.amax(np.diag(jtj))
+                u = solver_params.initial_scale_factor * np.amax(jtj.diagonal())
 
-            jtj_augmented = jtj.copy()
-            np.fill_diagonal(jtj_augmented, np.diag(jtj_augmented) + u)
-            dx = np.linalg.solve(jtj_augmented, gradient)
+            jtj_augmented = dia_matrix(jtj)
+            jtj_augmented.setdiag(jtj_augmented.diagonal() + u)
+            # np.fill_diagonal(jtj_augmented.set, jtj_augmented.diagonal() + u)
+            dx = spsolve(jtj_augmented, gradient)
             solution = jtj_augmented @ dx
             if np.amin(np.abs(solution - gradient)) < solver_params.error_threshold:
                 if np.linalg.norm(dx) < solver_params.relative_step_threshold * np.linalg.norm(params):
