@@ -1,4 +1,5 @@
 import math
+from time import perf_counter
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -9,7 +10,14 @@ from py_minisam.optimizer import GaussNewtonOptimizer, LevenbergMarquardtOptimiz
 
 # np.seterr(all='raise')
 def rot(x: float) -> np.ndarray:
-    return np.array([[math.cos(x), -math.sin(x)], [math.sin(x), math.cos(x)]])
+    c = math.cos(x)
+    s = math.sin(x)
+    return np.array([[c, -s], [s, c]], dtype=np.float64)
+
+
+def to_theta(m):
+    v = m[:2, :2] @ np.array([1, 0])
+    return np.arctan2(v[1], v[0])
 
 
 class SE2:
@@ -20,9 +28,7 @@ class SE2:
 
     @staticmethod
     def from_matrix(m: np.ndarray):
-        v = m[:2, :2] @ np.array([1, 0])
-        theta = np.arctan2(v[1], v[0])
-        return SE2(theta, m[0, 2], m[1, 2])
+        return SE2(to_theta(m[:2, :2]), m[0, 2], m[1, 2])
 
     def flatten(self) -> np.ndarray:
         return np.array([self.theta, self.x, self.y], dtype=np.float64)
@@ -47,7 +53,10 @@ class SE2:
     def __matmul__(self, other):
         """Matrix multiplication."""
         if isinstance(other, SE2):
-            return SE2.from_matrix(self.as_matrix() @ other.as_matrix())
+            rot0 = rot(self.theta)
+            theta = (self.theta + other.theta + np.pi) % (2 * np.pi) - np.pi
+            translation = rot0 @ np.array([other.x, other.y], dtype=np.float64)
+            return SE2(theta, translation[0] + self.x, translation[1] + self.y)
         else:
             err_msg = "other has wrong type"
             raise ValueError(err_msg)
@@ -140,17 +149,24 @@ def main():
     factor_graph, init_values = load_g2o(file_path)
 
     factor_graph.add(PriorFactor("x0"))
-    gn = GaussNewtonOptimizer()
+    solver = GaussNewtonOptimizer()
     # gn = LevenbergMarquardtOptimizer()
-    plt.figure(figsize=(8, 8))
-    show_pose(init_values, "red")
-    gn.optimize_factor_graph(factor_graph, init_values, 10)
-    show_pose(init_values, "blue")
-    ax = plt.gca()
-    ax.set_xlim((-50, 50))
-    ax.set_ylim((-80, 20))
-    plt.tight_layout()
-    plt.show()
+    draw = True
+    if draw:
+        plt.figure(figsize=(8, 8))
+        show_pose(init_values, "red")
+
+    start_time = perf_counter()
+    solver.optimize_factor_graph(factor_graph, init_values, 5)
+    end_time = perf_counter()
+    print(f"{solver.__class__.__name__} takes {end_time-start_time:.3f} sec")
+    if draw:
+        show_pose(init_values, "blue")
+        ax = plt.gca()
+        ax.set_xlim((-50, 50))
+        ax.set_ylim((-80, 20))
+        plt.tight_layout()
+        plt.show()
     # print("end")
     pass
 

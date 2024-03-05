@@ -42,9 +42,6 @@ class Problem:
         problem = Problem()
         for factor in factor_graph.factors:
             variables = [initial_variables[k] for k in factor.variable_key_list]
-            for k in factor.variable_key_list:
-                print(k, initial_variables[k])
-            print()
             problem.add_residual_block(factor.dim_residual, factor.error_func, *variables)
         return problem
 
