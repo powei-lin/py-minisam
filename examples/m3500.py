@@ -129,16 +129,10 @@ def load_g2o(file_path: str):
     # print(init_values)
 
 
-def show_pose(init_values):
+def show_pose(init_values, color):
     data_x = [x[1] for x in init_values.values()]
     data_y = [x[2] for x in init_values.values()]
-    fig = plt.figure(figsize=(8, 8))
-    plt.scatter(data_x, data_y, s=1)
-    ax = plt.gca()
-    ax.set_xlim((-50, 50))
-    ax.set_ylim((-80, 20))
-    plt.tight_layout()
-    plt.show()
+    plt.scatter(data_x, data_y, s=1, c=color)
 
 
 def main():
@@ -146,24 +140,17 @@ def main():
     factor_graph, init_values = load_g2o(file_path)
 
     factor_graph.add(PriorFactor("x0"))
-    # problem = LeastSquaresProblem()
-    # for f in factor_graph.factors:
-    # print(f.variable_key_list)
-    # k0, k1 = f.variable_key_list
-    # problem.add_residual_block(3, partial(error_func, f.t_k0_k1), init_values[k0], init_values[k1], jac_func="3-point")
-    # problem.fix_variables(init_values["x0"])
-    # problem.solve(verbose=2, max_nfev=50)
-    # problem = Problem.from_factor_graph(factor_graph, init_values)
-    # variables = problem.combine_variables()
-    # r, j = problem.compute_residual_and_jacobian(variables)
-    # print(j)
-    # print(variables)
-    # for r in problem.residual_blocks:
-    #     print(r.variable_col_start_index_list)
     gn = GaussNewtonOptimizer()
     # gn = LevenbergMarquardtOptimizer()
+    plt.figure(figsize=(8, 8))
+    show_pose(init_values, "red")
     gn.optimize_factor_graph(factor_graph, init_values, 10)
-    show_pose(init_values)
+    show_pose(init_values, "blue")
+    ax = plt.gca()
+    ax.set_xlim((-50, 50))
+    ax.set_ylim((-80, 20))
+    plt.tight_layout()
+    plt.show()
     # print("end")
     pass
 
