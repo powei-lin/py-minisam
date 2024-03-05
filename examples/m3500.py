@@ -53,10 +53,12 @@ class SE2:
     def __matmul__(self, other):
         """Matrix multiplication."""
         if isinstance(other, SE2):
-            rot0 = rot(self.theta)
             theta = (self.theta + other.theta + np.pi) % (2 * np.pi) - np.pi
-            translation = rot0 @ np.array([other.x, other.y], dtype=np.float64)
-            return SE2(theta, translation[0] + self.x, translation[1] + self.y)
+            c = math.cos(self.theta)
+            s = math.sin(self.theta)
+            new_x = c * other.x - s * other.y + self.x
+            new_y = s * other.x + c * other.y + self.y
+            return SE2(theta, new_x, new_y)
         else:
             err_msg = "other has wrong type"
             raise ValueError(err_msg)
@@ -76,12 +78,12 @@ class BetweenFactor(FactorBase):
         self.kk = [k0, k1]
         super().__init__(3, self.kk)
         self.t_k0_k1 = t_k0_k1
-        self.se2_k0_k1 = SE2(*t_k0_k1)
+        self.se2_k0_k1 = SE2(t_k0_k1[0], t_k0_k1[1], t_k0_k1[2])
         # self.loss = loss_mat
 
     def error_func(self, se2_k0: np.ndarray, se2_k1: np.ndarray) -> np.ndarray:
-        se2_i_0 = SE2(*se2_k0)
-        se2_i_1 = SE2(*se2_k1)
+        se2_i_0 = SE2(se2_k0[0], se2_k0[1], se2_k0[2])
+        se2_i_1 = SE2(se2_k1[0], se2_k1[1], se2_k1[2])
         se2_1_0 = se2_i_1.inv() @ se2_i_0
         diff = (self.se2_k0_k1 @ se2_1_0).flatten()
         return diff
@@ -151,7 +153,7 @@ def main():
     factor_graph.add(PriorFactor("x0"))
     solver = GaussNewtonOptimizer()
     # gn = LevenbergMarquardtOptimizer()
-    draw = True
+    draw = False
     if draw:
         plt.figure(figsize=(8, 8))
         show_pose(init_values, "red")
