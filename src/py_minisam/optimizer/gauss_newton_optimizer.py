@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.sparse.linalg import spsolve
 
 from py_minisam.optimizer.base_optimizer import BaseOptimizer, ProblemResult
 from py_minisam.problem import Problem
@@ -16,10 +17,14 @@ class GaussNewtonOptimizer(BaseOptimizer):
             result.iterations += 1
 
             residuals, jac = problem.compute_residual_and_jacobian(params)
+            # print("r:", np.sum(np.abs(residuals)))
             hessian = jac.T @ jac
             b = -jac.T @ residuals
-            dx = np.linalg.solve(hessian, b)
-            if np.linalg.norm(dx) < 1e-8:
+            dx = spsolve(hessian, b)
+            # lu_factor once and lu_solve
+            # dx = np.linalg.solve(hessian, b)
+            # print(dx)
+            if np.linalg.norm(dx) < 1e-16:
                 break
             params += dx
             problem.write_back_variables(params)

@@ -38,6 +38,7 @@ class LevenbergMarquardtOptimizer(BaseOptimizer):
             if np.amin(np.abs(solution - gradient)) < solver_params.error_threshold:
                 if np.linalg.norm(dx) < solver_params.relative_step_threshold * np.linalg.norm(params):
                     result.status = SolverStatus.RelativeStepSizeTooSmall
+                    print("rrr")
                     break
                 param_new = params + dx
                 residual_new = np.zeros(problem._dim_residual, np.float64)

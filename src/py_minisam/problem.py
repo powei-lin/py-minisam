@@ -3,6 +3,7 @@ from functools import partial
 from typing import Dict, List, Tuple
 
 import numpy as np
+from scipy.sparse import dok_matrix
 
 from py_minisam.auto_diff import diff_3point_inplace
 from py_minisam.factor_graph import FactorGraph
@@ -40,7 +41,10 @@ class Problem:
     def from_factor_graph(factor_graph: FactorGraph, initial_variables: Dict[str, np.ndarray]):
         problem = Problem()
         for factor in factor_graph.factors:
-            variables = (initial_variables[k] for k in factor.variable_key_list)
+            variables = [initial_variables[k] for k in factor.variable_key_list]
+            for k in factor.variable_key_list:
+                print(k, initial_variables[k])
+            print()
             problem.add_residual_block(factor.dim_residual, factor.error_func, *variables)
         return problem
 
@@ -58,7 +62,7 @@ class Problem:
                 raise TypeError
             address = variable.__array_interface__["data"][0]
             if address not in self.variable_addr_to_col_idx_dict:
-                variable_dim = variable.shape[0]
+                variable_dim = variable.size
                 self.variable_addr_to_col_idx_dict[address] = self._dim_variable
                 self.col_idx_to_variable_dict[self._dim_variable] = variable
                 self._dim_variable += variable_dim
@@ -74,7 +78,8 @@ class Problem:
         self._dim_residual += dim_residual
 
     def compute_residual_and_jacobian(self, params: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
-        jac = np.zeros((self._dim_residual, self._dim_variable), dtype=np.float64)
+        # jac = np.zeros((self._dim_residual, self._dim_variable), dtype=np.float64)
+        jac = dok_matrix((self._dim_residual, self._dim_variable), dtype=np.float64)
         residuals = np.zeros(self._dim_residual, dtype=np.float64)
         for residual_block in self.residual_blocks:
             variables = []

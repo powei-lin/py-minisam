@@ -40,6 +40,8 @@ class BaseOptimizer:
     def optimize(self, problem: Problem, max_iteration: int = 100):
         pass
 
-    def optimize_factor_graph(self, factor_graph: FactorGraph, init_values: Dict[str, np.ndarray]):
+    def optimize_factor_graph(
+        self, factor_graph: FactorGraph, init_values: Dict[str, np.ndarray], max_iteration: int = 100
+    ):
         problem = Problem.from_factor_graph(factor_graph, init_values)
-        self.optimize(problem)
+        self.optimize(problem, max_iteration)
