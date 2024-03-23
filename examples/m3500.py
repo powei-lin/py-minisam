@@ -159,7 +159,7 @@ def main():
         show_pose(init_values, "red")
 
     start_time = perf_counter()
-    solver.optimize_factor_graph(factor_graph, init_values, 7)
+    solver.optimize_factor_graph(factor_graph, init_values, 8)
     end_time = perf_counter()
     print(f"{solver.__class__.__name__} takes {end_time-start_time:.3f} sec")
     if draw:
